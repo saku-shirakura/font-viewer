@@ -1,0 +1,10 @@
+[package]
+name = "font-viewer"
+version = "0.0.1"
+edition = "2024"
+publish = false
+
+[dependencies]
+iced_graphics = "0.14.0"
+iced = "0.14.0"
+glob = "0.3.3"
