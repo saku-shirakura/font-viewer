@@ -12,7 +12,12 @@ mod font_manager;
 fn font_loader() -> Vec<Vec<u8>> {
     match glob("./*.ttf") {
         Ok(v) => v
-            .filter_map(|v| v.ok().and_then(|v| read(v).ok()))
+            .filter_map(|v| {
+                v.ok().and_then(|v| {
+                    println!("loading... {}", v.to_str().unwrap_or_default());
+                    read(v).ok()
+                })
+            })
             .collect(),
         Err(_) => Default::default(),
     }
@@ -115,7 +120,6 @@ struct FontViewer {
     cb_weight: widget::combo_box::State<FVWeight>,
     text_size: f32,
     font_family_filter: String,
-    font_families: &'static Vec<String>,
     pinned: Vec<usize>,
     font_family_filter_pattern: Vec<String>,
     hide_unpin: bool,
@@ -141,7 +145,6 @@ impl FontViewer {
                 ]),
                 text_size: 12f32,
                 font_family_filter: Default::default(),
-                font_families: get_global_font_list(),
                 pinned: vec![],
                 font_family_filter_pattern: vec![],
                 hide_unpin: false,
@@ -202,8 +205,7 @@ impl FontViewer {
                 return Task::done(Message::UpdateShownFontFamily);
             }
             Message::UpdateShownFontFamily => {
-                self.shown_family = self
-                    .font_families
+                self.shown_family = get_global_font_list()
                     .iter()
                     .enumerate()
                     .filter(|(_, v)| self.is_target_font_family(v))
@@ -267,14 +269,14 @@ impl FontViewer {
             scrollable(iced::widget::table(
                 vec![
                     widget::table::column(th("Font Family"), |i: &usize| {
-                        widget::text(self.font_families.get(*i).unwrap())
+                        widget::text(get_global_font_list().get(*i).unwrap())
                     }),
                     widget::table::column(th("Text"), |i: &usize| {
                         widget::text(self.text.as_str())
                             .size(self.text_size)
                             .font(Font {
                                 weight: self.weight.clone().into(),
-                                ..Font::with_name(self.font_families.get(*i).unwrap())
+                                ..Font::with_name(get_global_font_list().get(*i).unwrap())
                             })
                     })
                     .width(Length::Fill),
