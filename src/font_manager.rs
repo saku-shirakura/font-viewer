@@ -7,7 +7,7 @@ fn font_list() -> Vec<String> {
             .raw()
             .db()
             .faces()
-            .filter_map(|v| v.families.first().and_then(|v| Some(v.0.clone())))
+            .filter_map(|v| v.families.first().map(|v| v.0.clone()))
             .collect(),
         Err(_) => Default::default(),
     };
