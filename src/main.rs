@@ -10,7 +10,7 @@ use std::fs::read;
 mod font_manager;
 
 fn font_loader() -> Vec<Vec<u8>> {
-    match glob("./*.ttf") {
+    match glob("./**/*.ttf") {
         Ok(v) => v
             .filter_map(|v| {
                 v.ok().and_then(|v| {
